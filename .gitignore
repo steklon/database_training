@@ -1,2 +1,5 @@
 .idea/
-main.py
+create.sql
+insert.sql
+select.sql
+Database_connection_diagram_for_a_music_site.drawio.png
