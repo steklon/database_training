@@ -39,17 +39,20 @@ def add_client(conn):
     first_name = input('Введите имя: ')
     last_name = input('Введите фамилию: ')
     email = input('Введите email: ')
-    with conn.cursor() as cur:
-        cur.execute("""
-                    INSERT INTO clients (first_name, last_name, email)
-                    VALUES (%s, %s, %s);
-                    """, (first_name, last_name, email))
-        conn.commit()
-        print(f'Запись создана\n'
-              f'Имя {first_name} записан\n'
-              f'Фамилия {last_name} записан\n'
-              f'email {email} записан')
-        add_phone(conn, email)
+    if first_name not in '' and last_name not in '' and email not in '':
+        with conn.cursor() as cur:
+            cur.execute("""
+                        INSERT INTO clients (first_name, last_name, email)
+                        VALUES (%s, %s, %s);
+                        """, (first_name, last_name, email))
+            conn.commit()
+            print(f'Запись создана\n'
+                  f'Имя {first_name} записан\n'
+                  f'Фамилия {last_name} записан\n'
+                  f'email {email} записан')
+            add_phone(conn, email)
+    else:
+        print('ОТМЕНА: вводимые данные не должны быть пустыми!')
 
 
 def add_phone(conn, email):
@@ -68,32 +71,35 @@ def add_phone(conn, email):
 
 
 def menu_update_db(conn_, email):
-    n = int(input('* 1 - email\n'
-                  '* 2 - Имя\n'
-                  '* 3 - Фамилия\n'
-                  '* 4 - Номер телефона\n'
-                  'Какие данные изменить? Введите число: '))
+    n = input('* 1 - email\n'
+              '* 2 - Имя\n'
+              '* 3 - Фамилия\n'
+              '* 4 - Номер телефона\n'
+              'Какие данные изменить? Введите число: ')
 
     client_id = search_id(conn_, email)
 
     while True:
-        if n == 1:
+        if n == '1':
             new_email = input('Введите новый email: ')
             update_db(conn_, new_email, 'email',
                       'clients', client_id, 'client_id')
             break
-        elif n == 2:
+        elif n == '2':
             new_first_name = input('Введите новое имя: ')
             update_db(conn_, new_first_name, 'first_name',
                       'clients', client_id, 'client_id')
             break
-        elif n == 3:
+        elif n == '3':
             new_last_name = input('Введите новую фамилию: ')
             update_db(conn_, new_last_name, 'last_name',
                       'clients', client_id, 'client_id')
             break
-        elif n == 4:
+        elif n == '4':
             update_phone(conn_, client_id)
+            break
+        else:
+            print('ОТМЕНА: ничего не выбрано')
             break
 
 
@@ -138,6 +144,7 @@ def delete_phone(conn_, email):
                     DELETE FROM phones 
                     WHERE phone_id = %s;
                     """, (phone_id,))
+        print(f'номер телефона {phone} удален')
 
 
 def delete_client(conn_, email):
